@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+        integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            setInterval(function () {
+                $.get('/hangar', function (data) {
+                    var svc_en_mantenimiento = $(data).find('#svc_en_mantenimiento');
+                    $('#svc_en_mantenimiento').replaceWith(svc_en_mantenimiento);
+                });
+            }, 5000);
+        });
+        function updateClock() {
+            var now = new Date();
+            var timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('clock').innerHTML = timeString;
+        }
+        setInterval(updateClock, 1000);
+
+        function borrarServicios() {
+            $('#svc_en_mantenimiento').remove();
+        }
+    </script>
+    <title>Hangar</title>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-dark d-flex justify-content-between">
+            <div class="container">
+                <div class="d-flex align-content-around">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="white"
+                        class="bi bi-airplane-engines mt-2 mr-3" viewBox="0 0 16 16">
+                        <path
+                            d="M8 0c-.787 0-1.292.592-1.572 1.151A4.347 4.347 0 0 0 6 3v3.691l-2 1V7.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.191l-1.17.585A1.5 1.5 0 0 0 0 10.618V12a.5.5 0 0 0 .582.493l1.631-.272.313.937a.5.5 0 0 0 .948 0l.405-1.214 2.21-.369.375 2.253-1.318 1.318A.5.5 0 0 0 5.5 16h5a.5.5 0 0 0 .354-.854l-1.318-1.318.375-2.253 2.21.369.405 1.214a.5.5 0 0 0 .948 0l.313-.937 1.63.272A.5.5 0 0 0 16 12v-1.382a1.5 1.5 0 0 0-.83-1.342L14 8.691V7.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v.191l-2-1V3c0-.568-.14-1.271-.428-1.849C9.292.591 8.787 0 8 0ZM7 3c0-.432.11-.979.322-1.401C7.542 1.159 7.787 1 8 1c.213 0 .458.158.678.599C8.889 2.02 9 2.569 9 3v4a.5.5 0 0 0 .276.447l5.448 2.724a.5.5 0 0 1 .276.447v.792l-5.418-.903a.5.5 0 0 0-.575.41l-.5 3a.5.5 0 0 0 .14.437l.646.646H6.707l.647-.646a.5.5 0 0 0 .14-.436l-.5-3a.5.5 0 0 0-.576-.411L1 11.41v-.792a.5.5 0 0 1 .276-.447l5.448-2.724A.5.5 0 0 0 7 7V3Z" />
+                    </svg>
+                    <a class="navbar-brand text-white " href="/">
+                        <h1><strong>MRO AIRCRAFT</strong></h1>
+                    </a>
+                </div>
+                <div>
+                    <a type="button" href="/hangar/new_svc" class="btn btn-info ml-1  ">Svc Register</a>
+                    <a type="button" href="/hangar/all_info" class="btn btn-light ml-1 ">Svc Info</a>
+                    <a type="button" href="/hangar/lasa" class="btn btn-warning ml-1 ">Lasa</a>
+                    <a type="button" href="/logout" class="btn btn-danger ml-1 ">Logout</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="container mt-3 d-flex justify-content-center aling-items-center mb-5">
+            <div class="row align-items-center border border-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="red"
+                    class="bi bi-clock-fill mb-3 ml-2" viewBox="0 0 16 16">
+                    <path
+                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
+                </svg>
+                <p><span id="clock" class="lead"></span></p>
+            </div>
+        </div>
+        <div class="container d-flex flex-column">
+            <div class="text-center" role="alert">
+                <div id="svc_en_mantenimiento" class="alert alert-warning border-warning" role="alert">
+                    {% if svc_en_mantenimiento%}
+                    <h2>Movimientos</h2>
+                    {% for svc_data in svc_en_mantenimiento %}
+                    Tiempo del movimiento <strong>{{ svc_data.movement_time }}</strong> Llamar Lasa para movimiento del
+                    <strong>{{ svc_data.matricule }}</strong> de la pisicion <strong>{{ svc_data.location}}</strong>,
+                    Informar a operarios posicion de destino <br>
+                    {% endfor %}
+                    {% else %}
+                    <p>No hay servicios en mantenimiento en este momento.</p>
+                    {% endif %}
+                    <div class="container w-50 d-flex justify-content-end mt-2">
+                        <button onclick="borrarServicios()">Borrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-dark">
+            <div class="container d-flex flex-column container-box mt-5 text-center bg-dark">
+                <div class="row">
+                    <div class="col square-box"></div>
+                    <div class="col square-box border border-dark bg-white">
+                        <p>P1</p>
+                        <img src="{{ url_for('static',filename='img/airplane_down.jpg') }}" class="img-fluid" />
+                        {% if svc_info|selectattr('location', 'equalto', 'p1')|list %}
+                        {% set svc = svc_info|selectattr('location', 'equalto', 'p1')|list|first %}
+                        <p class="bg-danger">{{ svc.matricule }}<br>{{ svc.description }}</p>
+                        {% else %}
+                        <p>EMPTY</p>
+                        {% endif %}
+                    </div>
+                    <div class="col square-box border border-dark ml-1 bg-white">
+                        <p>P2</p>
+                        <img src="{{ url_for('static',filename='img/airplane_down.jpg') }}" class="img-fluid" />
+                        {% if svc_info|selectattr('location', 'equalto', 'p2')|list %}
+                        {% set svc = svc_info|selectattr('location', 'equalto', 'p2')|list|first %}
+                        <p class="bg-danger">{{ svc.matricule }}<br>{{ svc.description }}</p>
+                        {% else %}
+                        <p>EMPTY</p>
+                        {% endif %}
+                    </div>
+                    <div class="col square-box"></div>
+                    <div class="col square-box border border-bottom-0 border-right-0 border-danger bg-warning ">
+                        <p>H5</p>
+                        <img src="{{ url_for('static',filename='img/airplane_right.png') }}" class="img-fluid" />
+                        {% if svc_info|selectattr('location', 'equalto', 'h5')|list %}
+                        {% set svc = svc_info|selectattr('location', 'equalto', 'h5')|list|first %}
+                        <p class="bg-danger">{{ svc.matricule }}<br>{{ svc.description }}</p>
+                        {% else %}
+                        <p>EMPTY</p>
+                        {% endif %}
+                    </div>
+                    <div class="col square-box border border-bottom-0 border-left-0 border-danger bg-warning"></div>
+                    <div class="col square-box border border-dark bg-white">
+                        <p>H7</p>
+                        <img src="{{ url_for('static',filename='img/airplane_left.png') }}" class="img-fluid" />
+                        {% if svc_info|selectattr('location', 'equalto', 'h7')|list %}
+                        {% set svc = svc_info|selectattr('location', 'equalto', 'h7')|list|first %}
+                        <p class="bg-danger">{{ svc.matricule }}<br>{{ svc.description }}</p>
+                        {% else %}
+                        <p>EMPTY</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col square-box"></div>
+                    <div class="col square-box"></div>
+                    <div class="col square-box"></div>
+                    <div class="col square-box border border-dark mt-1 bg-white">
+                        <p>4.L</p>
+                        <img src="{{ url_for('static',filename='img/airplane_right.png') }}" class="img-fluid" />
+                        {% if svc_info|selectattr('location', 'equalto', '4.l')|list %}
+                        {% set svc = svc_info|selectattr('location', 'equalto', '4.l')|list|first %}
+                        <p class="bg-danger">{{ svc.matricule }}<br>{{ svc.description }}</p>
+                        {% else %}
+                        <p>EMPTY</p>
+                        {% endif %}
+                    </div>
+                    <div class="col square-box border border-bottom-0 border-right-0 border-top-0 border-danger bg-warning"></div>
+                    <div class="col square-box border border-bottom-0 border-left-0 border-top-0 border-danger  bg-warning">
+                        <p>H4</p>
+                        <img src="{{ url_for('static',filename='img/airplane_left.png') }}" class="img-fluid" />
+                        {% if svc_info|selectattr('location', 'equalto', 'h4')|list %}
+                        {% set svc = svc_info|selectattr('location', 'equalto', 'h4')|list|first %}
+                        <p class="bg-danger">{{ svc.matricule }}<br>{{ svc.description }}</p>
+                        {% else %}
+                        <p>EMPTY</p>
+                        {% endif %}
+                    </div>
+                    <div class="col square-box"></div>
+                </div>
+                <div class="row">
+                    <div class="col square-box border border-dark bg-white">
+                        <p>RUNUP</p>
+                        <img src="{{ url_for('static',filename='img/airplane_right.png') }}" class="img-fluid" />
+                        {% if svc_info|selectattr('location', 'equalto', 'runup')|list %}
+                        {% set svc = svc_info|selectattr('location', 'equalto', 'runup')|list|first %}
+                        <p class="bg-danger">{{ svc.matricule }}<br>{{ svc.description }}</p>
+                        {% else %}
+                        <p>EMPTY</p>
+                        {% endif %}
+                    </div>
+                    <div class="col square-box"></div>
+                    <div class="col square-box"></div>
+                    <div class="col square-box border border-bottom-0 border-left-0 border-top-0 border-danger"></div>
+                    <div class="col square-box bg-warning ">
+                        <p>H3</p>
+                        <img src="{{ url_for('static',filename='img/airplane_right.png') }}" class="img-fluid" />
+                        {% if svc_info|selectattr('location', 'equalto', 'h3')|list %}
+                        {% set svc = svc_info|selectattr('location', 'equalto', 'h3')|list|first %}
+                        <p class="bg-danger">{{ svc.matricule }}<br>{{ svc.description }}</p>
+                        {% else %}
+                        <p>EMPTY</p>
+                        {% endif %}
+                    </div>
+                    <div class="col square-box border border-bottom-0 border-left-0 border-top-0 border-danger bg-warning"></div>
+                    <div class="col square-box"></div>
+                </div>
+                <div class="row">
+                    <div class="col square-box"></div>
+                    <div class="col square-box"></div>
+                    <div class="col square-box"></div>
+                    <div class="col square-box border border-dark bg-white">
+                        <p>2.L</p>
+                        <img src="{{ url_for('static',filename='img/airplane_right.png') }}" class="img-fluid" />
+                        {% if svc_info|selectattr('location', 'equalto', '2.l')|list %}
+                        {% set svc = svc_info|selectattr('location', 'equalto', '2.l')|list|first %}
+                        <p class="bg-danger">{{ svc.matricule }}<br>{{ svc.description }}</p>
+                        {% else %}
+                        <p>EMPTY</p>
+                        {% endif %}
+                    </div>
+                    <div class="col square-box border border-bottom-0 border-right-0 border-top-0 border-danger bg-warning"></div>
+                    <div class="col square-box border border-bottom-0 border-left-0 border-top-0 border-danger bg-warning">
+                        <p>H2</p>
+                        <img src="{{ url_for('static',filename='img/airplane_left.png') }}" class="img-fluid" />
+                        {% if svc_info|selectattr('location', 'equalto', 'h2')|list %}
+                        {% set svc = svc_info|selectattr('location', 'equalto', 'h2')|list|first %}
+                        <p class="bg-danger">{{ svc.matricule }}<br>{{ svc.description }}</p>
+                        {% else %}
+                        <p>EMPTY</p>
+                        {% endif %}
+                    </div>
+                    <div class="col square-box"></div>
+                </div>
+                <div class="row">
+                    <div class="col square-box"></div>
+                    <div class="col square-box border border-dark bg-white">
+                        <p>P4</p>
+                        <img src="{{ url_for('static',filename='img/airplane_up.jpg') }}" class="img-fluid" />
+                        {% if svc_info|selectattr('location', 'equalto', 'p4')|list %}
+                        {% set svc = svc_info|selectattr('location', 'equalto', 'p4')|list|first %}
+                        <p class="bg-danger">{{ svc.matricule }}<br>{{ svc.description }}</p>
+                        {% else %}
+                        <p>EMPTY</p>
+                        {% endif %}
+                    </div>
+                    <div class="col square-box border border-dark ml-1 bg-white">
+                        <p>P3</p>
+                        <img src="{{ url_for('static',filename='img/airplane_up.jpg') }}" class="img-fluid" />
+                        {% if svc_info|selectattr('location', 'equalto', 'p3')|list %}
+                        {% set svc = svc_info|selectattr('location', 'equalto', 'p3')|list|first %}
+                        <p class="bg-danger">{{ svc.matricule }}<br>{{ svc.description }}</p>
+                        {% else %}
+                        <p>EMPTY</p>
+                        {% endif %}
+                    </div>
+                    <div class="col square-box"></div>
+                    <div class="col square-box border  border-right-0 border-top-0 border-danger bg-warning">
+                        <p>H1</p>
+                        <img src="{{ url_for('static',filename='img/airplane_right.png') }}" class="img-fluid" />
+                        {% if svc_info|selectattr('location', 'equalto', 'h1')|list %}
+                        {% set svc = svc_info|selectattr('location', 'equalto', 'h1')|list|first %}
+                        <p class="bg-danger">{{ svc.matricule }}<br>{{ svc.description }}</p>
+                        {% else %}
+                        <p>EMPTY</p>
+                        {% endif %}
+                    </div>
+                    <div class="col square-box border border-left-0 border-top-0 border-danger bg-warning"></div>
+                    <div class="col square-box border border-dark bg-white">
+                        <p>H6</p>
+                        <img src="{{ url_for('static',filename='img/airplane_left.png') }}" class="img-fluid" />
+                        {% if svc_info|selectattr('location', 'equalto', 'h6')|list %}
+                        {% set svc = svc_info|selectattr('location', 'equalto', 'h6')|list|first %}
+                        <p class="bg-danger">{{ svc.matricule }}<br>{{ svc.description }}</p>
+                        {% else %}
+                        <p>EMPTY</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>  
+        <div class="bg-dark">hola</div>
+    </main>
+</body>
+
+</html>
